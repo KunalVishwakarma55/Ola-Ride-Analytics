@@ -1,25 +1,62 @@
-select * from Bookings;
+-- Retrieve all bookings
+SELECT * FROM Bookings;
 
----1. Retrieve all successful bookings:---
-Create View Successful_Bookings as 
-select * from Bookings where Booking_Status='Success';
+-- 1. Retrieve all successful bookings
+CREATE VIEW Successful_Bookings AS
+SELECT * FROM Bookings
+WHERE Booking_Status = 'Success';
 
-select * from Successful_Bookings;
+SELECT * FROM Successful_Bookings;
 
----Find the average ride distance for each vehicle type:---
-create view average_ride_distance_for_each_vehicle_type as
-select Vehicle_Type, AVG(Ride_Distance) as avg_distance from Bookings group by Vehicle_Type;
+-- 2. Find the average ride distance for each vehicle type
+CREATE VIEW Average_Ride_Distance_By_Vehicle AS
+SELECT Vehicle_Type, AVG(Ride_Distance) AS avg_distance
+FROM Bookings
+GROUP BY Vehicle_Type;
 
-select * from average_ride_distance_for_each_vehicle_type;
+SELECT * FROM Average_Ride_Distance_By_Vehicle;
 
---Get the total number of cancelled rides by customers:--
-create view total_number_of_cancelled_rides_by as
-select COUNT(Canceled_Rides_by_Customer) as total_number from Bookings where Booking_Status='Canceled by Customer';
+-- 3. Get the total number of cancelled rides by customers
+CREATE VIEW Total_Cancelled_Rides_By_Customers AS
+SELECT COUNT(*) AS total_cancelled
+FROM Bookings
+WHERE Booking_Status = 'Canceled by Customer';
 
-select * from  total_number_of_cancelled_rides_by;
+SELECT * FROM Total_Cancelled_Rides_By_Customers;
 
+-- 4. List the top 5 customers who booked the highest number of rides
+SELECT TOP 5 Customer_ID, COUNT(*) AS total_rides
+FROM Bookings
+GROUP BY Customer_ID
+ORDER BY total_rides DESC;
 
---List the top 5 customers who booked the highest number of rides:
-select top 5 Customer_ID,COUNT(*) as total_ride from Bookings group by Customer_ID order by total_ride desc;
+-- 5. Get the number of rides cancelled by drivers due to personal and car-related issues
+SELECT COUNT(*) AS total_cancelled_by_driver
+FROM Bookings
+WHERE Canceled_Rides_by_Driver = 'Personal & Car related issue';
 
---Get the number of rides cancelled by drivers due to personal and car-related issues:select count(*) as total_cancelled from Bookings where Canceled_Rides_by_Driver='Personal & Car related issue'--Find the maximum and minimum driver ratings for Prime Sedan bookings:select max(Driver_Ratings) as maximum,min(Driver_Ratings) as minimum from Bookings WHERE Vehicle_Type='Prime Sedan'; --Retrieve all rides where payment was made using UPI: select * from Bookings where Payment_Method='UPI'; --Find the average customer rating per vehicle type:select Vehicle_Type, round(AVG(Customer_Rating),2) as Avg_Customer_Rating from Bookings group by Vehicle_Type;--Calculate the total booking value of rides completed successfully:select sum(Booking_Value) from Bookings where Booking_Status='Success';--List all incomplete rides along with the reason:SELECT Booking_ID, Incomplete_Rides_Reason FROM bookings WHERE Incomplete_Rides = 1;
+-- 6. Find the maximum and minimum driver ratings for Prime Sedan bookings
+SELECT MAX(Driver_Ratings) AS max_rating,
+       MIN(Driver_Ratings) AS min_rating
+FROM Bookings
+WHERE Vehicle_Type = 'Prime Sedan';
+
+-- 7. Retrieve all rides where payment was made using UPI
+SELECT *
+FROM Bookings
+WHERE Payment_Method = 'UPI';
+
+-- 8. Find the average customer rating per vehicle type
+SELECT Vehicle_Type, ROUND(AVG(Customer_Rating), 2) AS Avg_Customer_Rating
+FROM Bookings
+GROUP BY Vehicle_Type;
+
+-- 9. Calculate the total booking value of rides completed successfully
+SELECT SUM(Booking_Value) AS Total_Successful_Booking_Value
+FROM Bookings
+WHERE Booking_Status = 'Success';
+
+-- 10. List all incomplete rides along with the reason
+SELECT Booking_ID, Incomplete_Rides_Reason
+FROM Bookings
+WHERE Incomplete_Rides = 1;
